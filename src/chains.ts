@@ -1,4 +1,4 @@
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, fallback } from "viem";
 import { mainnet, base, zora, optimism, arbitrum } from "viem/chains";
 
 export type ChainKey = "ethereum" | "base" | "zora" | "optimism" | "arbitrum";
@@ -25,7 +25,15 @@ export const CHAINS: Record<ChainKey, ChainConfig> = {
     key: "ethereum",
     name: "Ethereum",
     id: mainnet.id,
-    client: createPublicClient({ chain: mainnet, transport: http(rpc.ethereum) }),
+    client: createPublicClient({
+      chain: mainnet,
+      transport: fallback([
+        http(rpc.ethereum),
+        http("https://rpc.ankr.com/eth"),
+        http("https://eth.llamarpc.com"),
+        http("https://rpc.flashbots.net"),
+      ]),
+    }),
     isL1: true,
     isOpStack: false,
   },

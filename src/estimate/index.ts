@@ -42,23 +42,31 @@ export async function estimateForChains(data: Uint8Array, opts: { chains: ChainK
     let l2GasPrice: bigint | undefined;
     let l1DataFeeWei: bigint | undefined;
 
-    if (cfg.isL1) {
-      baseFeePerGas = await getBaseFeePerGas(cfg.client);
-      const tip = gweiToWei(opts.tipGwei);
-      const gasPrice = baseFeePerGas + tip;
-      ethCostWei = totalGas * gasPrice;
-    } else {
-      // L2: total = (gas * l2GasPrice) + L1_data_component (if OP-Stack)
-      l2GasPrice = await cfg.client.getGasPrice();
-      let l1Fee = 0n;
-      if (cfg.isOpStack) {
-        l1Fee = await totalL1DataFeeOpStack(cfg.client, chunks);
-        l1DataFeeWei = l1Fee;
-      } else {
-        warnings.push("L1 data fee not fetched for this L2; showing L2 gas only (approx)");
+      try {
+        if (cfg.isL1) {
+          baseFeePerGas = await getBaseFeePerGas(cfg.client);
+          const tip = gweiToWei(opts.tipGwei);
+          const gasPrice = baseFeePerGas + tip;
+          ethCostWei = totalGas * gasPrice;
+        } else {
+          // L2: total = (gas * l2GasPrice) + L1_data_component (if OP-Stack)
+          l2GasPrice = await cfg.client.getGasPrice();
+          let l1Fee = 0n;
+          if (cfg.isOpStack) {
+            l1Fee = await totalL1DataFeeOpStack(cfg.client, chunks);
+            l1DataFeeWei = l1Fee;
+          } else {
+            warnings.push("L1 data fee not fetched for this L2; showing L2 gas only (approx)");
+          }
+          ethCostWei = totalGas * l2GasPrice + l1Fee;
+        }
+      } catch (e) {
+        warnings.push(`Failed to fetch fees for ${cfg.name}: ${(e as any)?.message ?? String(e)}`);
+        ethCostWei = 0n;
+        baseFeePerGas = undefined;
+        l2GasPrice = undefined;
+        l1DataFeeWei = undefined;
       }
-      ethCostWei = totalGas * l2GasPrice + l1Fee;
-    }
 
     const eth = Number(formatEther(ethCostWei));
     const fiatPrice = opts.fiat === "usd" ? price.usd : price.aud;
