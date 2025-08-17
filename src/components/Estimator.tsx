@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Check } from "lucide-react";
 import { CHAIN_LABELS, ALL_CHAIN_KEYS, ChainKey } from "@/chains";
 import { readFileBytes, buildMediaMeta, minifySvgIfNeeded, MediaMeta } from "@/media/intake";
 import { estimateForChains, Fiat } from "@/estimate";
@@ -162,8 +163,13 @@ export default function Estimator() {
                           key={k}
                           type="button"
                           variant={active ? "default" : "outline"}
+                          className={active 
+                            ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                            : "bg-red-100 hover:bg-red-200 text-red-800 border-red-300"
+                          }
                           onClick={() => setSelectedChains((prev) => prev.includes(k) ? prev.filter(x => x!==k) : [...prev, k])}
                         >
+                          {active && <Check className="w-4 h-4 mr-2" />}
                           {CHAIN_LABELS[k]}
                         </Button>
                       );
