@@ -4,6 +4,7 @@ import { formatEther } from "viem";
 import { getEthPrice } from "@/price/coingecko";
 import { totalGasForData } from "@/estimate/sstore2";
 import { totalCalldataBytes, totalL1DataFeeOpStack } from "@/estimate/opstack";
+import { getCachedGasPrice, setCachedGasPrice } from "@/gas/cache";
 
 export type Fiat = "usd" | "aud";
 
@@ -30,27 +31,41 @@ export type EstimateResult = {
 export async function estimateForChains(data: Uint8Array, opts: { chains: ChainKey[]; tipGwei: number; fiat: Fiat; }): Promise<EstimateResult> {
   const { totalGas, chunks } = totalGasForData(data);
   const calldataBytes = totalCalldataBytes(chunks);
-  const price = await getEthPrice();
-
-  const rows: EstimateRow[] = [];
-
-  for (const key of opts.chains) {
-    const cfg = CHAINS[key];
-    const warnings: string[] = [];
-    let ethCostWei = 0n;
-    let baseFeePerGas: bigint | undefined;
-    let l2GasPrice: bigint | undefined;
-    let l1DataFeeWei: bigint | undefined;
+  
+  // Fetch ETH price and all chain data in parallel
+  const [price, ...chainResults] = await Promise.all([
+    getEthPrice(),
+    ...opts.chains.map(async (key) => {
+      const cfg = CHAINS[key];
+      const warnings: string[] = [];
+      let ethCostWei = 0n;
+      let baseFeePerGas: bigint | undefined;
+      let l2GasPrice: bigint | undefined;
+      let l1DataFeeWei: bigint | undefined;
 
       try {
+        // Check cache first
+        const cached = getCachedGasPrice(key);
+        
         if (cfg.isL1) {
-          baseFeePerGas = await getBaseFeePerGas(cfg.client);
+          if (cached?.baseFeePerGas) {
+            baseFeePerGas = cached.baseFeePerGas;
+          } else {
+            baseFeePerGas = await getBaseFeePerGas(cfg.client);
+            setCachedGasPrice(key, { baseFeePerGas });
+          }
           const tip = gweiToWei(opts.tipGwei);
           const gasPrice = baseFeePerGas + tip;
           ethCostWei = totalGas * gasPrice;
         } else {
           // L2: total = (gas * l2GasPrice) + L1_data_component (if OP-Stack)
-          l2GasPrice = await cfg.client.getGasPrice();
+          if (cached?.l2GasPrice) {
+            l2GasPrice = cached.l2GasPrice;
+          } else {
+            l2GasPrice = await cfg.client.getGasPrice();
+            setCachedGasPrice(key, { l2GasPrice });
+          }
+          
           let l1Fee = 0n;
           if (cfg.isOpStack) {
             l1Fee = await totalL1DataFeeOpStack(cfg.client, chunks);
@@ -68,30 +83,31 @@ export async function estimateForChains(data: Uint8Array, opts: { chains: ChainK
         l1DataFeeWei = undefined;
       }
 
-    const eth = Number(formatEther(ethCostWei));
-    const fiatPrice = opts.fiat === "usd" ? price.usd : price.aud;
-    const fiatCost = eth * fiatPrice;
+      const eth = Number(formatEther(ethCostWei));
+      const fiatPrice = opts.fiat === "usd" ? price.usd : price.aud;
+      const fiatCost = eth * fiatPrice;
 
-    if (data.length > 5 * 1024 * 1024) {
-      warnings.push("File >5MB: L1 likely impractical; consider SVG or L2");
-    }
+      if (data.length > 5 * 1024 * 1024) {
+        warnings.push("File >5MB: L1 likely impractical; consider SVG or L2");
+      }
 
-    rows.push({
-      chain: key,
-      gasUsed: totalGas,
-      chunks: chunks.length,
-      ethCostWei,
-      ethCost: eth.toFixed(6),
-      fiatCost,
-      warnings,
-      baseFeePerGas,
-      l2GasPrice,
-      l1DataFeeWei,
-    });
-  }
+      return {
+        chain: key,
+        gasUsed: totalGas,
+        chunks: chunks.length,
+        ethCostWei,
+        ethCost: eth.toFixed(6),
+        fiatCost,
+        warnings,
+        baseFeePerGas,
+        l2GasPrice,
+        l1DataFeeWei,
+      } as EstimateRow;
+    })
+  ]);
 
   return {
-    rows,
+    rows: chainResults,
     ethPrice: price,
     calldataBytes,
     constants: {
