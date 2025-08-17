@@ -36,6 +36,14 @@ const Index = () => {
           >
             Fully On-Chain SVG Guide →
           </a>
+          <a 
+            href="https://onchainchecker.xyz/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2"
+          >
+            OnChain Checker →
+          </a>
         </div>
       </header>
       <main>
