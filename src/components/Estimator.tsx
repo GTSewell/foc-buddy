@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -34,6 +35,7 @@ export default function Estimator() {
   const [fiat, setFiat] = useState<Fiat>("usd");
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<Awaited<ReturnType<typeof estimateForChains>> | null>(null);
+  const [progress, setProgress] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -97,6 +99,24 @@ export default function Estimator() {
     })();
     return () => { cancelled = true; };
   }, [effectiveBytes, selectedChains, tip, fiat, toast]);
+
+  // Animate progress bar while loading
+  useEffect(() => {
+    if (!loading) {
+      setProgress(0);
+      return;
+    }
+    
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        // Cycle between 10-90% to show activity without reaching completion
+        const next = prev + 8;
+        return next > 90 ? 10 : next;
+      });
+    }, 200);
+    
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -287,7 +307,15 @@ export default function Estimator() {
             </div>
           )}
 
-          {loading && <div className="mt-4 text-sm text-muted-foreground">Calculating...</div>}
+          {loading && (
+            <div className="mt-6 space-y-3 animate-fade-in">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Calculating costs...</span>
+                <span className="text-muted-foreground">{progress}%</span>
+              </div>
+              <Progress value={progress} className="w-full" />
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
