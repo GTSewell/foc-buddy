@@ -50,6 +50,14 @@ const Index = () => {
           >
             OnChain Checker →
           </a>
+          <a 
+            href="https://compressjpeg.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2"
+          >
+            Compress JPEGs →
+          </a>
         </div>
       </header>
       <main>
