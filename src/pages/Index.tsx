@@ -1,4 +1,5 @@
 import Estimator from "@/components/Estimator";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
@@ -17,8 +18,13 @@ const Index = () => {
         <meta property="og:type" content="website" />
       </Helmet>
       <header className="container pt-10 pb-4">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Onchain Storage Cost Estimator (SSTORE2)</h1>
-        <p className="text-muted-foreground mt-2 max-w-2xl">Fast, client-side cost estimates for storing your media fully on-chain using SSTORE2. Perfect for artists comparing L1 and L2s.</p>
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Onchain Storage Cost Estimator (SSTORE2)</h1>
+            <p className="text-muted-foreground mt-2 max-w-2xl">Fast, client-side cost estimates for storing your media fully on-chain using SSTORE2. Perfect for artists comparing L1 and L2s.</p>
+          </div>
+          <ThemeToggle />
+        </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
           <a 
             href="https://svgo.dev/" 
