@@ -32,10 +32,11 @@ export async function estimateForChains(data: Uint8Array, opts: { chains: ChainK
   const { totalGas, chunks } = totalGasForData(data);
   const calldataBytes = totalCalldataBytes(chunks);
   
-  // Fetch ETH price and all chain data in parallel
-  const [price, ...chainResults] = await Promise.all([
-    getEthPrice(),
-    ...opts.chains.map(async (key) => {
+  // Fetch ETH price first, then parallelize chain calculations
+  const price = await getEthPrice();
+  
+  const chainResults = await Promise.all(
+    opts.chains.map(async (key) => {
       const cfg = CHAINS[key];
       const warnings: string[] = [];
       let ethCostWei = 0n;
@@ -104,7 +105,7 @@ export async function estimateForChains(data: Uint8Array, opts: { chains: ChainK
         l1DataFeeWei,
       } as EstimateRow;
     })
-  ]);
+  );
 
   return {
     rows: chainResults,
