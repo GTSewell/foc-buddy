@@ -53,6 +53,11 @@ export default function Estimator() {
       toast({ title: "Unsupported file", description: "Please use PNG/JPG/GIF/SVG/MP4" });
       return;
     }
+    
+    // Reset previous calculations when new file is uploaded
+    setLoading(false);
+    setRows(null);
+    
     setFile(f);
     const b = await readFileBytes(f);
     setData(b);
