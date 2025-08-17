@@ -9,7 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CHAIN_LABELS, ALL_CHAIN_KEYS, ChainKey } from "@/chains";
 import { readFileBytes, buildMediaMeta, minifySvgIfNeeded, MediaMeta } from "@/media/intake";
 import { estimateForChains, Fiat } from "@/estimate";
@@ -178,7 +179,27 @@ export default function Estimator() {
                 </div>
 
                 <div>
-                  <div className="mb-2 font-medium">L1 priority tip (gwei): {tip}</div>
+                  <div className="mb-2 font-medium flex items-center gap-2">
+                    L1 priority tip (gwei): {tip}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button type="button" className="inline-flex items-center justify-center rounded-full w-4 h-4 text-muted-foreground hover:text-foreground transition-colors">
+                          <Info className="w-3 h-3" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80" align="start">
+                        <div className="space-y-2">
+                          <p className="font-medium">L1 priority tip: Basically the lower the slower.</p>
+                          <p className="text-sm text-muted-foreground">
+                            The L1 priority tip is a small extra amount you add on top of Ethereum's automatic base fee to reward the validator for including your transaction sooner. The base fee is burned (nobody keeps it); the tip is paid to the validator.
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            A higher tip can speed up confirmation during busy periods, but it doesn't change how much gas your transaction uses—it only affects how fast it gets picked. For most mints, ~1 gwei is fine; bump to 2–3 gwei if you need it included quickly. (Under the hood this is maxPriorityFeePerGas in EIP-1559.)
+                          </p>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   <Slider value={[tip]} onValueChange={(v) => setTip(v[0] ?? 0)} min={0} max={5} step={0.1} />
                 </div>
 
