@@ -83,6 +83,7 @@ export default function Estimator() {
     let cancelled = false;
     (async () => {
       if (!effectiveBytes) return;
+      setRows(null);  // Clear previous results to avoid currency mismatch
       setLoading(true);
       try {
         const res = await estimateForChains(effectiveBytes, { chains: selectedChains, tipGwei: tip, fiat });
