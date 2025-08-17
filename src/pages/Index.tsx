@@ -19,6 +19,24 @@ const Index = () => {
       <header className="container pt-10 pb-4">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Onchain Storage Cost Estimator (SSTORE2)</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl">Fast, client-side cost estimates for storing your media fully on-chain using SSTORE2. Perfect for artists comparing L1 and L2s.</p>
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <a 
+            href="https://svgo.dev/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2"
+          >
+            Optimize SVGs with SVGO →
+          </a>
+          <a 
+            href="https://www.fullyonchain.art/articles/fully-on-chain-svg-nfts-rendering" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2"
+          >
+            Fully On-Chain SVG Guide →
+          </a>
+        </div>
       </header>
       <main>
         <Estimator />
