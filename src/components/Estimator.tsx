@@ -36,6 +36,7 @@ export default function Estimator() {
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<Awaited<ReturnType<typeof estimateForChains>> | null>(null);
   const [progress, setProgress] = useState(0);
+  const [progressMessage, setProgressMessage] = useState("");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,23 +101,36 @@ export default function Estimator() {
     return () => { cancelled = true; };
   }, [effectiveBytes, selectedChains, tip, fiat, toast]);
 
-  // Animate progress bar while loading
+  // Simulate realistic progress stages
   useEffect(() => {
     if (!loading) {
       setProgress(0);
+      setProgressMessage("");
       return;
     }
     
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        // Cycle between 10-90% to show activity without reaching completion
-        const next = prev + 8;
-        return next > 90 ? 10 : next;
-      });
-    }, 200);
+    let currentStage = 0;
+    const stages = [
+      { progress: 10, message: "Initializing calculation..." },
+      { progress: 20, message: "Fetching ETH prices..." },
+      { progress: 30, message: `Processing ${selectedChains.length} chain${selectedChains.length > 1 ? 's' : ''}...` },
+      { progress: 50, message: "Fetching gas prices..." },
+      { progress: 70, message: "Calculating L1 data fees..." },
+      { progress: 90, message: "Computing final costs..." },
+      { progress: 95, message: "Finalizing results..." }
+    ];
     
-    return () => clearInterval(interval);
-  }, [loading]);
+    const progressInterval = setInterval(() => {
+      if (currentStage < stages.length) {
+        const stage = stages[currentStage];
+        setProgress(stage.progress);
+        setProgressMessage(stage.message);
+        currentStage++;
+      }
+    }, 500);
+    
+    return () => clearInterval(progressInterval);
+  }, [loading, selectedChains.length]);
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -310,7 +324,7 @@ export default function Estimator() {
           {loading && (
             <div className="mt-6 space-y-3 animate-fade-in">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Calculating costs...</span>
+                <span className="text-muted-foreground">{progressMessage || "Starting calculation..."}</span>
                 <span className="text-muted-foreground">{progress}%</span>
               </div>
               <Progress value={progress} className="w-full" />
