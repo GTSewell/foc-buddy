@@ -146,6 +146,9 @@ export default function Estimator() {
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle>Onchain Storage Cost Estimator (SSTORE2)</CardTitle>
+          <p className="text-amber-600 dark:text-amber-400 text-sm font-medium mt-2">
+            ⚠️ Currently in Beta testing. Estimated gas values may be wrong ⚠️
+          </p>
         </CardHeader>
         <CardContent>
           <div
