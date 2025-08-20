@@ -20,7 +20,7 @@ const Index = () => {
       <header className="container pt-10 pb-4">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Onchain Storage Cost Estimator (SSTORE2)</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Fully On-Chain Buddy</h1>
             <p className="text-muted-foreground mt-2 max-w-2xl">Fast, client-side cost estimates for storing your media fully on-chain using SSTORE2. Perfect for artists comparing L1 and L2s.</p>
             <p className="text-muted-foreground mt-1 text-sm">
               Built by{" "}
