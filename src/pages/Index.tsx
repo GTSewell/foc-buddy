@@ -25,12 +25,12 @@ const Index = () => {
           </div>
           <ThemeToggle />
         </div>
-        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm relative z-10">
           <a 
             href="https://svgo.dev/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 underline underline-offset-2"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer pointer-events-auto"
           >
             Optimize SVGs with SVGO →
           </a>
@@ -38,7 +38,7 @@ const Index = () => {
             href="https://www.fullyonchain.art/articles/fully-on-chain-svg-nfts-rendering" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 underline underline-offset-2"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer pointer-events-auto"
           >
             Fully On-Chain SVG Guide →
           </a>
@@ -46,7 +46,7 @@ const Index = () => {
             href="https://onchainchecker.xyz/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 underline underline-offset-2"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer pointer-events-auto"
           >
             OnChain Checker →
           </a>
@@ -54,7 +54,7 @@ const Index = () => {
             href="https://compressjpeg.com/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 underline underline-offset-2"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 cursor-pointer pointer-events-auto"
           >
             Compress JPEGs →
           </a>
