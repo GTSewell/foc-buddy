@@ -50,10 +50,10 @@ export default function Estimator() {
     const f = files?.[0];
     if (!f) return;
     const okTypes = [
-      "image/png","image/jpeg","image/gif","image/svg+xml","video/mp4"
+      "image/png","image/jpeg","image/gif","image/webp","image/svg+xml","video/mp4"
     ];
     if (!okTypes.includes(f.type)) {
-      toast({ title: "Unsupported file", description: "Please use PNG/JPG/GIF/SVG/MP4" });
+      toast({ title: "Unsupported file", description: "Please use PNG/JPG/GIF/WebP/SVG/MP4" });
       return;
     }
     
@@ -156,8 +156,8 @@ export default function Estimator() {
             onDragOver={(e) => e.preventDefault()}
             className="border-2 border-dashed rounded-lg p-6 mb-6 text-center"
           >
-            <input ref={inputRef} type="file" className="hidden" accept="image/png,image/jpeg,image/gif,image/svg+xml,video/mp4" onChange={(e) => onFiles(e.target.files)} />
-            <p className="mb-3">Drag & drop PNG/JPG/GIF/SVG/MP4 here</p>
+            <input ref={inputRef} type="file" className="hidden" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml,video/mp4" onChange={(e) => onFiles(e.target.files)} />
+            <p className="mb-3">Drag & drop PNG/JPG/GIF/WebP/SVG/MP4 here</p>
             <Button variant="secondary" onClick={onBrowse}>Browse file</Button>
           </div>
 
